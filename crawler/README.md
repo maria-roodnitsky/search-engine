@@ -37,7 +37,7 @@ URLs are constrained to 300 characters.
 To compile, simply `make crawler.o'
 
 ### Exit Codes
-0: No errors\n
+0: No errors  
 1: User did not provide 4 command-line arguments  
 2: User did not provide a valid directory  
 3: User did not provide a depth in the bounds [0, MAXIMUM_DEPTH]  
