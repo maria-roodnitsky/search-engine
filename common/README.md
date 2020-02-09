@@ -18,7 +18,9 @@ int pageSaver(char *fileName, webpage_t *currPage);
 
 It writes pages in the following format:
 *[url]
+
 [depth at which it was discovered]
+
 [html]*
 
 
