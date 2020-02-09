@@ -37,12 +37,12 @@ URLs are constrained to 300 characters.
 To compile, simply `make crawler.o'
 
 ### Exit Codes
-0: No errors
-1: User did not provide 4 command-line arguments
-2: User did not provide a valid directory
-3: User did not provide a depth in the bounds [0, MAXIMUM_DEPTH]
-4: User did not provide a valid starting URL. 
-5: User provided a depth beginning with a non-numeric character
-6: An error occurred in writing a file. 
+0: No errors\n
+1: User did not provide 4 command-line arguments\n
+2: User did not provide a valid directory\n
+3: User did not provide a depth in the bounds [0, MAXIMUM_DEPTH]\n
+4: User did not provide a valid starting URL. \n
+5: User provided a depth beginning with a non-numeric character\n
+6: An error occurred in writing a file. \n
 
 To test, simply `make test`.
