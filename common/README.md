@@ -17,11 +17,12 @@ int pageSaver(char *fileName, webpage_t *currPage);
 `pageSaver` is a function to save crawled pages to a file in a specific format. It returns 0 if the file-writing goes successfully; otherwise, it returns an error exit code of 1.
 
 It writes pages in the following format:
-*[url]
+
+[url]
 
 [depth at which it was discovered]
 
-[html]*
+[html]
 
 
 ### Assumptions
