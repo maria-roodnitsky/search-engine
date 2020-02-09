@@ -27,7 +27,7 @@ typedef struct crawler {
 * pageID: number of page visited (for file writing)
 * dirName: name of directory to which to write webpage data 
 
-####Functions:  
+#### Functions:  
 ```
 static crawler_t *crawler_new(int userMaxDepth, char *userDirName)
 ```
