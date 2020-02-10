@@ -4,7 +4,7 @@
 GitHub username: f003kgm
 
 To build, run `make`.
-
+To test, run `make test`
 To clean up, run `make clean`.
 
-*Please replace this text with any comments you have about the overall assignment.  Please supply a README for each subdirectory..*
+*Thank you for taking the time to grade this portion of the tiny-search-engine!*

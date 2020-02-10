@@ -1,0 +1,158 @@
+/testing.sh
+COMMENCE TESTING
+error: command line requires 4 arguments in the follow format:[./crawler] [seedURL] [pageDirectory] [maxDepth]
+error: command line requires 4 arguments in the follow format:[./crawler] [seedURL] [pageDirectory] [maxDepth]
+error: command line requires 4 arguments in the follow format:[./crawler] [seedURL] [pageDirectory] [maxDepth]
+The given URL is invalid.
+www.google.com has been taken as the starting URL
+
+The directory 'noDir' does not exist.
+Invalid depth. Depth must be in the range [0,10].
+Your maxDepth value '-2' is non-numeric.
+Your maxDepth value 'a89' is non-numeric.
+The given URL is invalid.
+www.mariaandsabrina.com has been taken as the starting URL
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/maria.html has been taken as the starting URL
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/maria.html does not contain any HTML. Skipping.
+
+TESTING http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html AT DEPTH 0
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been taken as the starting URL
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been fetched
+
+TESTING http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html AT DEPTH 1
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been taken as the starting URL
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been fetched
+
+TESTING http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html AT DEPTH 1 WITH NON-NUMERIC
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been taken as the starting URL
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been fetched
+
+TESTING http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html AT DEPTH 2
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been taken as the starting URL
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html has been fetched
+
+TESTING http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html AT DEPTH 5
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been taken as the starting URL
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/C.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/F.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/H.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/H.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/F.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/C.html has been fetched
+
+TESTING http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html AT DEPTH 5
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html has been taken as the starting URL
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/C.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/F.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/H.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/H.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/F.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/C.html has been fetched
+
+TESTING http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/ AT DEPTH 1
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/ has been taken as the starting URL
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/ has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Computer_science.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/C_(programming_language).html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Unix.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Hash_table.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Linked_list.html has been found and stored from the page: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Linked_list.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Hash_table.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Unix.html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/C_(programming_language).html has been fetched
+
+http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Computer_science.html has been fetched
+
+TESTING COMPLETE
