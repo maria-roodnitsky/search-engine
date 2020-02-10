@@ -1,7 +1,7 @@
-# Your name
+# Maria Roodnitsky
 ## CS50 Winter 2020, Tiny Search Engine
 
-GitHub username:
+GitHub username: f003kgm
 
 To build, run `make`.
 

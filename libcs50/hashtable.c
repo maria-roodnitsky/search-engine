@@ -15,7 +15,7 @@
 #include "hashtable.h"
 #include "jhash.h"
 #include "memory.h"
-#include "../set/set.h"
+#include "set.h"
 
 /**************** file-local global variables ****************/
 /* none */

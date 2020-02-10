@@ -1,2 +1,4 @@
 #System file for MacOS
 Icon?
+*.o
+*test/
