@@ -7,4 +7,6 @@ To build, run `make`.
 To test, run `make test`
 To clean up, run `make clean`.
 
+Updated: Now includes indexer information [2/16/20]
+
 *Thank you for taking the time to grade this portion of the tiny-search-engine!*
