@@ -1,0 +1,21 @@
+./testing.sh
+
+COMMENCE TESTING FOR INDEXER
+error: command line requires 3 arguments in the follow format:[./indexer] [pageDirectory] [indexFilename]
+error: command line requires 3 arguments in the follow format:[./indexer] [pageDirectory] [indexFilename]
+The directory 'noncrawler' either does not exist or is not a crawler produced directory.
+The file 'notwritfile.txt' either does not exist or is not writable.
+rm: remove write-protected regular empty file 'notwritfile.txt'? TESTING writing test2 data to dir1output.txt
+TESTING writing test5 data to dir2output.txt
+
+TESTING COMPLETE FOR INDEXER
+
+COMMENCE TESTING FOR INDEXTEST
+error: command line requires 3 arguments in the follow format:[./indexer] [oldIndexFilename] [newIndexFilename]
+error: command line requires 3 arguments in the follow format:[./indexer] [oldIndexFilename] [newIndexFilename]
+The file 'dir2output.txt' either does not exist or is not readable.
+The file 'dir2outputtransfer.txt' either does not exist or is not writable.
+TESTING transfering dir1output data to dir1outputtransfer
+TESTING transfering dir2output data to dir2outputtransfer
+
+TESTING COMPLETE FOR INDEXTEST
