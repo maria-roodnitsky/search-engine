@@ -105,6 +105,7 @@ index_t *index_load(char *oldIndexFilename, char *newIndexFilename){
     
     char* parsedString = strtok(string, " "); //parse the line by a space deliminator
     strcpy(word, parsedString); //copy the first part of the parsed string into the 'word' variable
+    word[strlen(word) - 1] = '\0'; //strip the trailing ":" on each word 
     parsedString = strtok(NULL, " "); //skip to the next part
     
     while (parsedString != NULL) { //while there still string to parse
