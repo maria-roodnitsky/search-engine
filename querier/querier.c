@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -32,6 +31,7 @@ static void set_intersect_helper(void *arg, const int key, const int item);
 static void set_intersect(counters_t *setA, counter_holder_t *setB);
 
 counters_t *create_and_seq(index_t *index, char **words);
+
 int min(int num1, int num2); 
 
 void nameprint(FILE *fp, const char *key, void *item);
@@ -40,9 +40,9 @@ static void itemcount(void *arg, const int key, const int value);
 counters_t *copy_func(counters_t *original);
 
 static void arraystuff(void *arg, const int key, const int value);
-static void arraystuff(void *arg, const int key, const int value);
 array_index_t *order(counters_t *ctrs);
 void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char *dirName);
+void namedelete(void* item);
 
 int main(const int argc, const char *argv[]){
   
@@ -98,16 +98,19 @@ int main(const int argc, const char *argv[]){
   char buf[200]; //buffer for fgets()
   char **words; //will hold the array of parsed words
   
-  printf("Query? \n>");
+  printf("Query? ");
   while ((line = fgets(buf, 200, stdin)) != NULL){
     words = parseLineIntoWords(line);
     
-    if (words == NULL) continue; //if bad input, skip this query
-    if (!checkWordOrder(words)) { //if the word order is not permissible "and and" 
+    if (words == NULL){
+      printf("Query? ");
+      continue; 
+    }//if bad input, skip this query
+    else if (!checkWordOrder(words)) { //if the word order is not permissible "and and" 
       free(words);                //or "and/or" at the beginning or end, skip this iteration
+      printf("Query? ");
       continue; 
     }
-  
     printf("Query: ");
     for (int i = 0; words[i] != NULL; i++){ 
     NormalizeWord(words[i]);
@@ -122,6 +125,8 @@ int main(const int argc, const char *argv[]){
   print_results(and_seq, ordered, dirName);
   free(words);
   counters_del(and_seq);
+  free(ordered->array);
+  free(ordered);
   }
   free(dirName);
   index_free(index);
@@ -146,7 +151,7 @@ void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char
    
    FILE *ifile;
    ifile = fopen(tempFile2, "r");
-   char *line = malloc(200);
+   char *line = calloc(200, sizeof(char));
    fgets(line, 200, ifile);
    fclose(ifile);
    
@@ -172,7 +177,7 @@ counters_t *create_and_seq(index_t *index, char **words){
     if (isOr(words[i])){
       counter_holder_t *ch = count_malloc(sizeof(counter_holder_t));
       counters_t *copy = copy_func(and_seq); 
-      //counters_t *copy = copy_func(hashtable_find(index->wordHashtable, words[i-1]));
+      counters_del(and_seq);
       ch->copy = copy;
       for (int j = start; j < end; j++){
         if(!isAnd(words[j])){
@@ -181,7 +186,8 @@ counters_t *create_and_seq(index_t *index, char **words){
         
         set_intersect(copy, ch);}
       }
-      bag_insert(or_bag, and_seq);
+      bag_insert(or_bag, copy);
+      free(ch);
       and_seq = counters_new();
       start = i + 1;
     } else if(isAnd(words[i])){
@@ -200,8 +206,8 @@ counters_t *create_and_seq(index_t *index, char **words){
   counter_holder_t *ch = count_malloc(sizeof(counter_holder_t));
       printf("inside copy create\n");
       counters_t *copy = copy_func(and_seq); 
-      //counters_t *copy = copy_func(hashtable_find(index->wordHashtable, words[0]));
-      ch->copy = and_seq;
+      ch->copy = copy;
+      counters_del(and_seq);
       
   for (int j = start; j < end; j++){
         if(!isAnd(words[j])){
@@ -210,16 +216,19 @@ counters_t *create_and_seq(index_t *index, char **words){
         
         set_intersect(copy, ch);}
   }
-  bag_insert(or_bag, and_seq);
+  bag_insert(or_bag, copy);
+  free(ch);
   counters_t *set;  
   counters_t *query_res = counters_new();
   
   
   while ((set = bag_extract(or_bag)) != NULL){
     counters_print(set, stdout);
-    set_merge(query_res, set);  
+    set_merge(query_res, set); 
+    counters_del(set);
   }
   
+  bag_delete(or_bag, namedelete);
   counters_print(query_res, stdout);
   return query_res;
 }
@@ -280,11 +289,9 @@ static void
 set_intersect_helper(void *arg, const int key, const int count)
 {
   counter_holder_t *ch = arg; 
-  counters_t *copy = ch->copy;
-  counters_t *counter = ch->and_seq_counters;
   
   int copycount = counters_get(ch->copy, key);
-  int countercount = counters_get(counter, key); 
+  int countercount = counters_get(ch->and_seq_counters, key); 
   int min_n;
   
   printf("big set A: %d; small set B: %d; key: %d\n", copycount, countercount, key);
@@ -295,7 +302,6 @@ set_intersect_helper(void *arg, const int key, const int count)
     min_n = min(copycount, countercount);
     counters_set(ch->copy, key, min_n);
   }
-  counters_print(copy, stdout);
 }
 
 array_index_t *order(counters_t *ctrs){
@@ -305,7 +311,7 @@ array_index_t *order(counters_t *ctrs){
   
   printf("total is %d\n", ntotal);
   
-  array_index_t *arraybig = malloc(sizeof(int)); 
+  array_index_t *arraybig = malloc(200); 
   arraybig->array = malloc(50 * ntotal);
   arraybig->slot = 0;
   
@@ -320,8 +326,6 @@ static void arraystuff(void *arg, const int key, const int value)
   printf("inside stuff\n");
   array_index_t *arraybig = arg;
   int nslot = arraybig->slot;
-  counters_t *counter = counters_new();
-  counters_set(counter, key, value);
   
   arraybig->array[nslot] = key;
   arraybig->slot += 1;
@@ -354,4 +358,10 @@ void nameprint(FILE *fp, const char *key, void *item)
   }
 }
 
-
+// delete a name 
+void namedelete(void* item)
+{
+  if (item != NULL) {
+    free(item);   
+  }
+}
