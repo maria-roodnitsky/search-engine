@@ -1,3 +1,10 @@
+/* 
+ * querier.c - CS50
+ * 
+ * Given a crawler directory, and an index file this program takes a user inputed query and ranks the related pages in the crawler directory
+ * February 2020, Maria Roodnitsky
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -11,40 +18,40 @@
 #include "../libcs50/set.h"
 #include "../libcs50/bag.h"
 
-
+/************data types********/
 typedef struct array_index {
   int slot; // holds a copy of all counters in the and sequence
   int *array;      // holds a counter from the and sequence
   counters_t *counterset;
 } array_index_t;
 
-
 typedef struct counter_holder {
   counters_t *copy;		      // holds a copy of all counters in the and sequence
   counters_t *and_seq_counters;      // holds a counter from the and sequence
 } counter_holder_t;
 
-/************ data type ********/
-static void set_merge(counters_t *setA, counters_t *setB);
-static void set_merge_helper(void *arg, const int key, const int count);
+/************functions********/
+void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char *dirName);
 
-static void set_intersect_helper(void *arg, const int key, const int item);
-static void set_intersect(counters_t *setA, counter_holder_t *setB);
 
 counters_t *create_and_seq(index_t *index, char **words);
-
-int min(int num1, int num2); 
-
-void nameprint(FILE *fp, const char *key, void *item);
-static void itemcount(void *arg, const int key, const int value);
+void intersect_related(int start, int end, char **words, counter_holder_t *ch, index_t *index, counters_t *copy);
 
 counters_t *copy_func(counters_t *original);
 
-static void arraystuff(void *arg, const int key, const int value);
-array_index_t *order(counters_t *ctrs);
-void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char *dirName);
-void namedelete(void* item);
+static void counters_merge(counters_t *setA, counters_t *setB);
+static void counters_merge_helper(void *arg, const int key, const int count);
 
+static void counters_intersect(counters_t *setA, counter_holder_t *setB);
+static void counters_intersect_helper(void *arg, const int key, const int item);
+
+array_index_t *order(counters_t *counter);
+static void array_insertion_sort(void *arg, const int key, const int value);
+
+int min(int num1, int num2); 
+static void nodecount(void *arg, const int key, const int value);
+
+/************main()********/
 int main(const int argc, const char *argv[]){
   
   //check to make sure the command line has been given 3 arguments 
@@ -99,285 +106,220 @@ int main(const int argc, const char *argv[]){
   char buf[200]; //buffer for fgets()
   char **words; //will hold the array of parsed words
   
-  printf("Query? ");
+  printf("Query? "); //prompt the first query
+  
   while ((line = fgets(buf, 200, stdin)) != NULL){
-    words = parseLineIntoWords(line);
+    words = parseLineIntoWords(line); //parse the line into an array holding words
     
-    if (words == NULL){
-      printf("Query? ");
+    if (words == NULL){ //skip if bad input is given
+      printf("Query? "); //prompt for another query
       continue; 
     }//if bad input, skip this query
     else if (!checkWordOrder(words)) { //if the word order is not permissible "and and" 
-      free(words);                //or "and/or" at the beginning or end, skip this iteration
-      printf("Query? ");
-      continue; 
+      free(words);                //or "and/or" at the beginning or end
+      printf("Query? ");     //prompt for another query
+      continue;              //and skip this query
     }
-    printf("Query: ");
+    printf("Query: "); //print the cleaned up query
     for (int i = 0; words[i] != NULL; i++){ 
     NormalizeWord(words[i]);
     printf("%s ", words[i]);
-    }
-    
+    } 
     printf("\n");
 
-  counters_t *and_seq = create_and_seq(index, words);
+  counters_t *page_scores = create_and_seq(index, words); //create the counters object that holds the scores of each pageID
+  array_index_t *ordered = order(page_scores); //order the counter nodes within the object 
+  print_results(page_scores, ordered, dirName); //print the results to the screen
   
-  array_index_t *ordered = order(and_seq);  
-  print_results(and_seq, ordered, dirName);
-  free(words);
-  counters_del(and_seq);
-  free(ordered->array);
-  free(ordered);
+  free(words); //free the words array
+  counters_del(page_scores); //delete each counter node in the page_scores counters object
+  free(ordered->array); //free the array in the ordered array_index structure
+  free(ordered); //free the structure itself 
+  printf("Query? ");  //prompt for another query
   }
-  free(dirName);
-  index_free(index);
+  
+  free(dirName); //when all done, free the directory name 
+  index_free(index); //free the index
+  return 0; //exit 0 for success
 }
 
-void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char *dirName){
+/****************print_results() ****************/
+void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char *dirName){ 
+  int MAX_URL_LENGTH = 300;
   
-  for (int i = 0; i < ordered_array->slot; i++){
-   //if the top result has a score of zero, there must be no matches
-   if (counters_get(final_and_seq, ordered_array->array[0]) == 0){
+  for (int i = 0; i < ordered_array->slot; i++){ //for each key in the counter array
+   if (counters_get(final_and_seq, ordered_array->array[0]) == 0){//if the top result has a score of zero, there must be no matches
      printf("No results found\n"); //print this to the user
      break;
    }
-   else if (counters_get(final_and_seq, ordered_array->array[i]) == 0){ //if the score is zero, 
-     continue;
-   }
+   else if (counters_get(final_and_seq, ordered_array->array[i]) == 0){ //if the array has reached the results with a score of zero,
+     break; //there are no more results to be printed, so exit the loop
+   } 
    
-   //make a temporary file name with the directory and pageID
-   char *tempFile2 = (char *)count_malloc_assert((strlen(dirName) + 10)*sizeof(char), "Not enough memory to make temporary file name.\n");
-   
-   sprintf (tempFile2, "%s/%d", dirName, ordered_array->array[i]); //print this into the string
+   //make a temporary file name with the directory and pageID, which is the item in the ith slot of the ordered array
+   char *tempFile = (char *)count_malloc_assert((strlen(dirName) + 4)*sizeof(char), "Not enough memory to make temporary file name.\n");
+   sprintf (tempFile, "%s/%d", dirName, ordered_array->array[i]); 
    
    FILE *ifile;
-   ifile = fopen(tempFile2, "r");
-   char *line = calloc(200, sizeof(char));
-   fgets(line, 200, ifile);
-   fclose(ifile);
+   ifile = fopen(tempFile, "r"); //open the file, which is presumed to exist
+   if (ifile == NULL){
+     printf("Problem with crawler produced directory. File not found: %s", tempFile);
+   }
    
-   printf("score: %4d doc: %4d url: %s ", counters_get(final_and_seq, ordered_array->array[i]), ordered_array->array[i], line); 
-   free(tempFile2);
-   free(line);
+   char *url = count_calloc_assert(MAX_URL_LENGTH + 1, sizeof(char), "Error allocating space for  url."); //allocate space for the url
+   fgets(url, MAX_URL_LENGTH, ifile); //read the first line in as the url
+   fclose(ifile); //close the file
+   
+   printf("score:%3d doc:%3d url: %s", counters_get(final_and_seq, ordered_array->array[i]), ordered_array->array[i], url); 
+   free(tempFile); //free the string holding the file name
+   free(url); //free the string holding the url
    }  
 }
 
-
-
-
+/****************create_and_seq() ****************/
 counters_t *create_and_seq(index_t *index, char **words){
-  counters_t *and_seq = counters_new();
-  bag_t *or_bag = bag_new();
+  counters_t *and_seq = counters_new(); //create the first and sequence
+  bag_t *or_bag = bag_new(); //create a bag which will hold and sequences that need to be 'or'-ed
   
-  int i = 0;
-  int start = 0;
-  int end = 0;
+  int i = 0; //tracks which word is being processed
+  int start = 0; //tracks the beginning of the current and sequence
+  int end = 0; //tracks the end of the current and sequence
   
-  
-  while (words[i] != NULL){
-    if (isOr(words[i])){
-      counter_holder_t *ch = count_malloc(sizeof(counter_holder_t));
-      counters_t *copy = copy_func(and_seq); 
-      counters_del(and_seq);
-      ch->copy = copy;
-      for (int j = start; j < end; j++){
-        if(!isAnd(words[j])){
-        ch->and_seq_counters = hashtable_find(index->wordHashtable, words[j]);
-        printf("intersecting\n"); 
-        
-        set_intersect(copy, ch);}
-      }
-      bag_insert(or_bag, copy);
-      free(ch);
-      and_seq = counters_new();
-      start = i + 1;
-    } else if(isAnd(words[i])){
-      
+  while (words[i] != NULL){ //while there are still words to be processed
+    if (isOr(words[i]) || words[i+1] == NULL){ //if this word is or, end the previous and sequence; also end if there are no more words
+      counter_holder_t *ch = count_malloc_assert(sizeof(counter_holder_t), "Error allocating memory for counter holder."); //create a counter holder
+      counters_t *copy = copy_func(and_seq); //copy the current and sequence into the copy 
+      ch->copy = copy; //insert this into the counter holder
+      counters_del(and_seq); //delete the previous and sequence
+      intersect_related(start, end, words, ch, index, ch->copy); //intersect every word with the and sequence copy
+      bag_insert(or_bag, copy); //once the and sequence has been processed, 
+      free(ch); //free the counter holder
+      if (isOr(words[i])) {and_seq = counters_new();} //allocate for a new and sequence if this is not the end of the words
+      start = i + 1; //move the start tracker
+    } else if (isAnd(words[i])){ //if the word is and, there isn't much to do
       i++; 
       end += 1;
       continue;
     } else {
-      set_merge(and_seq, hashtable_find(index->wordHashtable, words[i]));
-      counters_print(and_seq, stdout);
+      counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); //otherwise, the counters for the word with the and sequence
     }
     end += 1;
     i++;
   }    
+ 
+  counters_t *query_res = counters_new(); //allocate space for the final counter object created by this query
   
-  counter_holder_t *ch = count_malloc(sizeof(counter_holder_t));
-      printf("inside copy create\n");
-      counters_t *copy = copy_func(and_seq); 
-      ch->copy = copy;
-      counters_del(and_seq);
-      
-  for (int j = start; j < end; j++){
-        if(!isAnd(words[j])){
-        ch->and_seq_counters = hashtable_find(index->wordHashtable, words[j]);
-        printf("intersecting\n"); 
-        
-        set_intersect(copy, ch);}
-  }
-  bag_insert(or_bag, copy);
-  free(ch);
-  counters_t *set;  
-  counters_t *query_res = counters_new();
-  
-  
-  while ((set = bag_extract(or_bag)) != NULL){
-    counters_print(set, stdout);
-    set_merge(query_res, set); 
-    counters_del(set);
+  counters_t *set;   
+  while ((set = bag_extract(or_bag)) != NULL){ //extract counters holding and sequences 
+    counters_merge(query_res, set); //merge them with the final result 
+    counters_del(set); //free the individual and sequences
   }
   
-  bag_delete(or_bag, namedelete);
-  counters_print(query_res, stdout);
-  return query_res;
+  bag_delete(or_bag, NULL); //delete the bag when it is empty
+  return query_res; //return the final counters object
 }
 
+/****************intersect_related() ****************/
+void intersect_related(int start, int end, char **words, counter_holder_t *ch, index_t *index, counters_t *copy){
+  for (int j = start; j < end; j++){ //for all of the words in the and sequence
+    if(!isAnd(words[j])){ //if they are NOT 'and' (which is a useless word)
+      ch->and_seq_counters = hashtable_find(index->wordHashtable, words[j]); //intersect the counters with the and sequence
+      counters_intersect(copy, ch);}
+      }
+}
+
+/****************copy_func() ****************/
 counters_t *copy_func(counters_t *original){
-  
-  counters_t *copy = counters_new();
-  set_merge(copy, original);
-  
+  counters_t *copy = counters_new(); //allocate space for a new counters object
+  counters_merge(copy, original); //merge the copy with the information from the original 
   return copy;
 }
 
-
-/* Merge the second set into the first set;
- * the second set is unchanged.
- */
-static void 
-set_merge(counters_t *setA, counters_t *setB)
-{
-  counters_iterate(setB, setA, set_merge_helper);
+/****************counters_merge() ****************/
+static void counters_merge(counters_t *counterA, counters_t *counterB){
+  counters_iterate(counterB, counterA, counters_merge_helper);
 }
 
-/* Consider one item for insertion into the other set.
- * If the other set does not contain the item, insert it;
- * otherwise, update the other set's item with sum of item values.
- */
+/****************counters_merge_helper() ****************/
 static void 
-set_merge_helper(void *arg, const int key, const int item)
+counters_merge_helper(void *arg, const int key, const int countB)
 {
-  counters_t *setA = arg;
-  int itemB = item;
-  
-  // find the same key in setA
-  int itemA = counters_get(setA, key);
-  if (itemA == 0) {
-    // not found: insert it
-    counters_set(setA, key, itemB);
-    //printf("set A did not have an item for %d, so it was merged in\n", key);
+  counters_t *counterA = arg;
+  int countA = counters_get(counterA, key); //find the count for this key in counter A
+ 
+  if (countA == 0) {
+    counters_set(counterA, key, countB); //if the counter A does not have it, add this key with counter B's count
   } else {
-    // add to the existing value
-    itemA += itemB;
-    counters_set(setA, key, itemA);
-    //printf("set A did have the item for %d, so the count was added in\n", key);
+    countA += countB; //if both counters have this key, put their sum into counter A
+    counters_set(counterA, key, countA); 
   }
 }
 
-/* Take the intersection of two sets and store it in the first set.
- * the second set is unchanged.
- */
-static void 
-set_intersect(counters_t *setA, counter_holder_t *setB)
-{
-  counters_iterate(setA, setB, set_intersect_helper);
+/****************counters_intersect() ****************/
+static void counters_intersect(counters_t *counterA, counter_holder_t *counterholder){
+  counters_iterate(counterA, counterholder, counters_intersect_helper); 
 }
 
-
-static void 
-set_intersect_helper(void *arg, const int key, const int count)
-{
+/****************counters_intersect_helper() ****************/
+static void counters_intersect_helper(void *arg, const int key, const int count){
   counter_holder_t *ch = arg; 
   
-  int copycount = counters_get(ch->copy, key);
-  int countercount = counters_get(ch->and_seq_counters, key); 
-  int min_n;
+  int copycount = counters_get(ch->copy, key); //grab the overall count for this pageID from the copy
+  int countercount = counters_get(ch->and_seq_counters, key); //grab the count of this pageID for this word 
   
-  printf("big set A: %d; small set B: %d; key: %d\n", copycount, countercount, key);
-  
-  if (countercount == 0) {
-    counters_set(ch->copy, key, 0); // not found this key in set B, set the int to zero
+  if (countercount == 0) { //if this word doesn't exist on the page
+    counters_set(ch->copy, key, 0); // set the overall count (stored in the copy) to zero
   } else {
-    min_n = min(copycount, countercount);
-    counters_set(ch->copy, key, min_n);
+    counters_set(ch->copy, key, min(copycount, countercount)); //otherwise, set it to the minimum of the two counts
   }
 }
 
-array_index_t *order(counters_t *ctrs){
-  int ntotal = 0;
+/****************order() ****************/
+array_index_t *order(counters_t *counter){ 
+  int ntotal = 0; //number of counter_node objects in the counter object
+  counters_iterate(counter, &ntotal, nodecount); //iterate through the counter object to calculate the number of nodes
   
-  counters_iterate(ctrs, &ntotal, itemcount);
+  array_index_t *array_index = count_malloc_assert(sizeof(array_index_t), "Error allocating memory for array index."); //allocate space for an array_index struct
+  array_index->array = count_malloc_assert(sizeof(int)*ntotal, "Error allocating for interal array."); //allocate space for an array of ntotal integers
+  array_index->slot = 0; //set the first open index to 0 
+  array_index->counterset = counter; //set the internal counterset as the one passed in as a parameter
   
-  printf("total is %d\n", ntotal);
-  
-  array_index_t *arraybig = malloc(200); 
-  arraybig->array = malloc(50 * ntotal);
-  arraybig->slot = 0;
-  arraybig->counterset = ctrs;
-  
-  counters_iterate(ctrs, arraybig, arraystuff); 
-  
-  return arraybig;
+  counters_iterate(counter, array_index, array_insertion_sort); //iterate through the counter object and insert nodes in order
+  return array_index;
 }
 
-//helper function to count items; tests validity of iterate function
-static void arraystuff(void *arg, const int key, const int value)
-{
-  printf("inside stuff\n");
-  array_index_t *arraybig = arg;
-  int nslot = arraybig->slot;
+/**************** array_insertion_sort() ****************/
+static void array_insertion_sort(void *arg, const int key, const int value){
+  array_index_t *array_index = arg; //the argument passed in should be of type 'array_index_t'
+  int nslot = array_index->slot; //count of slots in the array in the array_index struct
   
-  arraybig->array[nslot] = key;
-  arraybig->slot += 1;
+  array_index->array[nslot] = key; //put the nth counter_node's key into the nth slot of the array
   
+  int i, temp; //perform an insertion sort
+  i = nslot; //bubble down the element that was just inserted until it is in the sorted place
   
-  int i, j, temp;
-  
-  for (i = 1; i <= nslot; i++)
-    {j = i;
-      while (j > 0 && counters_get(arraybig->counterset, arraybig->array[j-1]) < counters_get(arraybig->counterset, arraybig->array[j]))
-      { temp = arraybig->array[j];
-        arraybig->array[j] = arraybig->array[j-1];
-        arraybig->array[j-1] = temp;
-        j--;
-      }
+  while (i > 0 && counters_get(array_index->counterset, array_index->array[i-1]) < counters_get(array_index->counterset, array_index->array[i])){ //while the count associated with this pageID is bigger than the one before it, flip them
+    temp = array_index->array[i]; //flip the two indices using a temporary holder
+    array_index->array[i] = array_index->array[i-1];
+    array_index->array[i-1] = temp;
+    i--; //keep moving back one until either the elements are ordered or it has reached the front of the array
     }
-    
+  
+  array_index->slot += 1; //increase the number of slots by one for the next counter_node
 }
 
-//helper function to count items; tests validity of iterate function
-static void itemcount(void *arg, const int key, const int value)
-{
-  int *nitems = arg;
-
-  if (nitems != NULL)
+/**************** item_count() ****************/
+static void nodecount(void *arg, const int key, const int value){
+  int *nitems = arg; //let the argument passed in be the address of a variable that stores the number of
+                     //counter_nodes seen in this counter object so far
+  if (nitems != NULL) //if the address is valid, increment the value stored at it by 1 for each counter_node seen
     (*nitems) += 1;
 }
 
-
-int min(int num1, int num2) 
-{
-  if (num1 < num2) return num1;
-  else return num2;
-}
-
-//prints null if the either key or item is null, otherwise, prints the pair both as strings
-void nameprint(FILE *fp, const char *key, void *item)
-{
-  if (key == NULL || item == NULL) {
-    fprintf(fp, "(null)");
-  }
-  else {
-    fprintf(fp, "(%s, %s)", key, (char *)item); 
-  }
-}
-
-// delete a name 
-void namedelete(void* item)
-{
-  if (item != NULL) {
-    free(item);   
-  }
+/**************** min() ****************/
+int min(int num1, int num2){
+  if (num1 < num2) //if the first num1 is smaller than num2, return it
+    return num1;
+  else //otherwise, num2 must be less than or equal to num1, in which case, the value it returns will be the overall min
+    return num2;
 }
