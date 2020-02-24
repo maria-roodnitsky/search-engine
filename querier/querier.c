@@ -15,6 +15,7 @@
 typedef struct array_index {
   int slot; // holds a copy of all counters in the and sequence
   int *array;      // holds a counter from the and sequence
+  counters_t *counterset;
 } array_index_t;
 
 
@@ -314,6 +315,7 @@ array_index_t *order(counters_t *ctrs){
   array_index_t *arraybig = malloc(200); 
   arraybig->array = malloc(50 * ntotal);
   arraybig->slot = 0;
+  arraybig->counterset = ctrs;
   
   counters_iterate(ctrs, arraybig, arraystuff); 
   
@@ -329,6 +331,20 @@ static void arraystuff(void *arg, const int key, const int value)
   
   arraybig->array[nslot] = key;
   arraybig->slot += 1;
+  
+  
+  int i, j, temp;
+  
+  for (i = 1; i <= nslot; i++)
+    {j = i;
+      while (j > 0 && counters_get(arraybig->counterset, arraybig->array[j-1]) < counters_get(arraybig->counterset, arraybig->array[j]))
+      { temp = arraybig->array[j];
+        arraybig->array[j] = arraybig->array[j-1];
+        arraybig->array[j-1] = temp;
+        j--;
+      }
+    }
+    
 }
 
 //helper function to count items; tests validity of iterate function
