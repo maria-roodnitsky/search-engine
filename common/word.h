@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 /**************** functions ****************/
 /* Converts a word to all lowercase. 
@@ -21,5 +22,11 @@
 *  Only letters are promised to be converted.
 */
 void NormalizeWord(char *word);
+
+
+char **parseLineIntoWords(char* line);
+bool checkWordOrder(char **words);
+bool isAnd(char *word);
+bool isOr(char *word);
 
 #endif
