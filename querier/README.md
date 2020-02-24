@@ -1,0 +1,1 @@
+Write a README.md file to provide any special information about how to compile or test your querier, any assumptions you made while writing the querier, and indicating how much of the functionality you implemented, as described in the grading section.

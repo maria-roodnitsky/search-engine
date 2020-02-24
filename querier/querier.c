@@ -138,6 +138,7 @@ int main(const int argc, const char *argv[]){
   printf("Query? ");  //prompt for another query
   }
   
+  printf("\n\nThank you for using the querier.\n");
   free(dirName); //when all done, free the directory name 
   index_free(index); //free the index
   return 0; //exit 0 for success
@@ -147,13 +148,16 @@ int main(const int argc, const char *argv[]){
 void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char *dirName){ 
   int MAX_URL_LENGTH = 300;
   
+  if (ordered_array->slot == 0) {printf("No results found\n");} //print this to the user
+  
   for (int i = 0; i < ordered_array->slot; i++){ //for each key in the counter array
    if (counters_get(final_and_seq, ordered_array->array[0]) == 0){//if the top result has a score of zero, there must be no matches
      printf("No results found\n"); //print this to the user
      break;
    }
    else if (counters_get(final_and_seq, ordered_array->array[i]) == 0){ //if the array has reached the results with a score of zero,
-     break; //there are no more results to be printed, so exit the loop
+   
+     continue; //there are no more results to be printed, so exit the loop
    } 
    
    //make a temporary file name with the directory and pageID, which is the item in the ith slot of the ordered array
@@ -187,6 +191,7 @@ counters_t *create_and_seq(index_t *index, char **words){
   
   while (words[i] != NULL){ //while there are still words to be processed
     if (isOr(words[i]) || words[i+1] == NULL){ //if this word is or, end the previous and sequence; also end if there are no more words
+      if (i == 0) { counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); }
       counter_holder_t *ch = count_malloc_assert(sizeof(counter_holder_t), "Error allocating memory for counter holder."); //create a counter holder
       counters_t *copy = copy_func(and_seq); //copy the current and sequence into the copy 
       ch->copy = copy; //insert this into the counter holder
@@ -195,7 +200,8 @@ counters_t *create_and_seq(index_t *index, char **words){
       bag_insert(or_bag, copy); //once the and sequence has been processed, 
       free(ch); //free the counter holder
       if (isOr(words[i])) {and_seq = counters_new();} //allocate for a new and sequence if this is not the end of the words
-      start = i + 1; //move the start tracker
+      else { start = i + 1; //move the start tracker
+      }
     } else if (isAnd(words[i])){ //if the word is and, there isn't much to do
       i++; 
       end += 1;
@@ -203,12 +209,11 @@ counters_t *create_and_seq(index_t *index, char **words){
     } else {
       counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); //otherwise, the counters for the word with the and sequence
     }
-    end += 1;
     i++;
   }    
  
   counters_t *query_res = counters_new(); //allocate space for the final counter object created by this query
-  
+ 
   counters_t *set;   
   while ((set = bag_extract(or_bag)) != NULL){ //extract counters holding and sequences 
     counters_merge(query_res, set); //merge them with the final result 

@@ -1,4 +1,4 @@
-# Makefile for 'indexer'
+# Makefile for 'querier'
 #
 # David Kotz, April 2016, 2017
 # updated by Xia Zhou, July 2016, 2018, January 2019
@@ -6,7 +6,9 @@
 # utilized by Maria Roodnitsky, February 2020
 
 
-OBJS1 = ../libcs50/hashtable.o ../libcs50/memory.o ../libcs50/webpage.o ../libcs50/counters.o ../libcs50/jhash.o ../libcs50/set.o ../libcs50/file.o ../common/word.o ../common/index.o ../common/pagedir.o ../libcs50/bag.o
+OBJS = ../libcs50/hashtable.o ../libcs50/memory.o ../libcs50/webpage.o ../libcs50/counters.o ../libcs50/jhash.o ../libcs50/set.o ../libcs50/file.o ../common/word.o ../common/index.o ../common/pagedir.o ../libcs50/bag.o
+
+TESTPROG = testing.sh
 
 LIBS = -lm
 
@@ -21,26 +23,25 @@ MAKE = make
 
 all:
 	$(MAKE) querier
-#	$(MAKE) indextest
-
+	$(MAKE) input_tester
+  
 querier: querier.c
-	$(CC) $(CFLAGS) $(OBJS1) -lm -o querier querier.c 
-
-#indextest: indextest.c
-#	$(CC) $(CFLAGS) $(OBJS1) -lm -o indextest indextest.c 
+	$(CC) $(CFLAGS) $(OBJS) -lm -o querier querier.c 
+  
+input_tester: input_tester.c
+	$(CC) $(CFLAGS) $(OBJS) -lm -o input_tester input_tester.c 
 
 
 hashtable.o: ../libcs50/set.h
 webpage.o: ../libcs50/file.h
 
-#test: $(TESTPROG)
-#	./$(TESTPROG)
+test: $(TESTPROG)
+	./$(TESTPROG)
 
 
 clean:
 	rm -f *~ *.o *.dSYM
-	rm -f indexer
 	rm -f core
 	rm -f vgcore.*
-	rm -f indextest
-	rm -f *.txt
+	rm -f querier
+	rm -f input_tester
