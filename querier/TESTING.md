@@ -32,14 +32,25 @@ Example line: dartmouth or harvard won the final football game and ivy league ch
 
 Output: 
 word found: dartmouth
+
 or found: or
+
 word found: harvard
+
 word found: won
+
 word found: the
-word found: final 
-word found: football 
-word found: game 
+
+word found: final
+  
+word found: football
+ 
+word found: game
+ 
 and found: and
+
 word found: ivy
+
 word found: league
+
 word found: championship
