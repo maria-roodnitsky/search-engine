@@ -1,0 +1,4 @@
+.nfs*
+*.o 
+input_tester
+querier

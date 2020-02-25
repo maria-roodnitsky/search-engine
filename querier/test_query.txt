@@ -1,0 +1,25 @@
+bad input! line :)
+       the    only   bad   input here is the asterisk *
+       
+and
+or       
+and bad word order
+or bad word order
+intersecting and and word order
+bad or or word order
+bad and or word order
+not bad andor word order should not be caught
+not bad orand word order should not be caught
+trailing and
+trailing or
+this or tse or dartmouth
+computational biology
+brEaDth fIRst search
+depth and graph or huffman
+eniac or for
+fast page or playground
+home or biology or transform and coding
+maria wrote a working querier
+home
+algorithm
+for or home or graph or tse 

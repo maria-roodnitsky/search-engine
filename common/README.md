@@ -91,21 +91,33 @@ index_t *index_load(char *oldIndexFilename, char *newIndexFilename)
 
 `index_load` makes the assumption that the new file has been checked to be writable; the old, readable and in indexer-produced format. 
 
-### word [2/16/2020]
-`word` will store shared word processing modules for the tiny search engines. As of right now, it contains one function, `NormalizeWord`. 
-
+### word [2/24/2020]
+`word` will store shared word processing modules for the tiny search engines.
 ### Usage
 
 The *word* module, defined in `word.h` and implemented in `word.c`, exports the following functions through `word.h`:
 ```c
 /* Given a word, converts all of its letters to lowercase */
 void NormalizeWord(char *word)
+/* Takes a string and parses it into words with spaces as deliminators. If there are any non-space or non-alphabetic characters, returns NULL. Otherwise, returns an array of pointers to parsed words. */
+char **parseLineIntoWords(char* line);
+/* Takes an array of words and confirms that the word order is correct. If the line begins or ends with 'or' or 'and', or the two words are adjacent in any way, returns false. If the word order is correct, returns true. */
+bool checkWordOrder(char **words);
+/* Takes a word and checks if it is 'and'; if 'and', return true; if not 'and', return false.*/ 
+bool isAnd(char *word);
+/* Takes a word and checks if it is 'or'; if 'or', return true; if not 'or', return false.*/ 
+bool isOr(char *word);
 ```
 ### Implementation and Assumptions
-`NormalizeWord` is a function that takes a word and converts it to lowercase.
+`NormalizeWord` is a function that takes a word and converts it to lowercase.`NormalizeWord` assumes that the word is not null. It only converts alphebetic characters; all else is ignored.
 
-`NormalizeWord` assumes that the word is not null. It only converts alphebetic characters; all else is ignored.
+`parseLineIntoInput` takes a string and parses it with ' ' as a deliminator. It returns an array of pointers to `char *` objects if there are no invalid characters. Otherwise, it returns NULL. `parseLineIntoInput` assumes the line is not null. 
 
+`checkWordOrder` takes an array of `char *` objects and confirms that there are no 'and' or 'or's in incorrect places. It returns true if there are no issues with word order; false, otherwise. `checkWordOrder` assumes that neither the word array given or the words inside are null.
+
+`isAnd` takes a `char *` and returns *true* if it is "and"; otherwise, it returns false. `isAnd` assumes the `char *` is not null. 
+
+`isOr` takes a `char *` and returns *true* if it is "or"; otherwise, it returns false. `isOr` assumes the `char *` is not null. 
 
 To compile the complete library, simply `make`. To clean up, `make clean`.
 --
