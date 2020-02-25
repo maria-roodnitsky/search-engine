@@ -20,35 +20,47 @@
 
 /************data types********/
 typedef struct array_index {
-  int slot; // holds a copy of all counters in the and sequence
-  int *array;      // holds a counter from the and sequence
-  counters_t *counterset;
+  int slot; // tracks how many slots are used
+  int *array;      // holds an array of keys to a counterset; the keys are stored in decreasing count order
+  counters_t *counterset; //holds the counterset to which the keys in the array are attributed
 } array_index_t;
 
 typedef struct counter_holder {
-  counters_t *copy;		      // holds a copy of all counters in the and sequence
-  counters_t *and_seq_counters;      // holds a counter from the and sequence
+  counters_t *copy;		      // holds a merged copy of all of the counters in the and sequence
+  counters_t *and_seq_counters;      // holds a specific counter from the and sequence
 } counter_holder_t;
 
 /************functions********/
+/* prints results of search */
 void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char *dirName);
 
-
+/* creates the counters object that stores the ID: count pairs for every relevant page*/
 counters_t *create_and_seq(index_t *index, char **words);
-void intersect_related(int start, int end, char **words, counter_holder_t *ch, index_t *index, counters_t *copy);
 
+/*copies a counter object into a new counter object*/
 counters_t *copy_func(counters_t *original);
 
+/*merges two counter objects, essentially creating a union of the two*/
 static void counters_merge(counters_t *setA, counters_t *setB);
+/*helper for above function*/
 static void counters_merge_helper(void *arg, const int key, const int count);
 
+/*finds the intersection of two counter objects*/
 static void counters_intersect(counters_t *setA, counter_holder_t *setB);
+/*helper for above function*/
 static void counters_intersect_helper(void *arg, const int key, const int item);
 
+/*intersects several counters objects which are all in the same and sequence */
+void intersect_related(int start, int end, char **words, counter_holder_t *ch, index_t *index, counters_t *copy);
+
+/*orders the pages for result display using an insertion sort algorithm*/
 array_index_t *order(counters_t *counter);
 static void array_insertion_sort(void *arg, const int key, const int value);
 
+/*returns the minimum of two numbers*/
 int min(int num1, int num2); 
+
+/*counts the number of counternodes in a counter object */
 static void nodecount(void *arg, const int key, const int value);
 
 /************main()********/
@@ -131,10 +143,12 @@ int main(const int argc, const char *argv[]){
   array_index_t *ordered = order(page_scores); //order the counter nodes within the object 
   print_results(page_scores, ordered, dirName); //print the results to the screen
   
+  //memory management
   free(words); //free the words array
   counters_del(page_scores); //delete each counter node in the page_scores counters object
   free(ordered->array); //free the array in the ordered array_index structure
   free(ordered); //free the structure itself 
+  
   printf("Query? ");  //prompt for another query
   }
   
@@ -148,7 +162,9 @@ int main(const int argc, const char *argv[]){
 void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char *dirName){ 
   int MAX_URL_LENGTH = 300;
   
-  if (ordered_array->slot == 0) {printf("No results found\n");} //print this to the user
+  if (ordered_array->slot == 0){ //if none of the words entered exist in the index, the array will not have any filled slots
+    printf("No results found\n");
+  } //print this to the user
   
   for (int i = 0; i < ordered_array->slot; i++){ //for each key in the counter array
    if (counters_get(final_and_seq, ordered_array->array[0]) == 0){//if the top result has a score of zero, there must be no matches
@@ -168,6 +184,7 @@ void print_results(counters_t *final_and_seq, array_index_t *ordered_array, char
    ifile = fopen(tempFile, "r"); //open the file, which is presumed to exist
    if (ifile == NULL){
      printf("Problem with crawler produced directory. File not found: %s", tempFile);
+     return;
    }
    
    char *url = count_calloc_assert(MAX_URL_LENGTH + 1, sizeof(char), "Error allocating space for  url."); //allocate space for the url
@@ -191,27 +208,31 @@ counters_t *create_and_seq(index_t *index, char **words){
   
   while (words[i] != NULL){ //while there are still words to be processed
     if (isOr(words[i]) || words[i+1] == NULL){ //if this word is or, end the previous and sequence; also end if there are no more words
-      if (i == 0) { counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); }
+      if (i == 0 || !isOr(words[i])) { 
+      counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); 
+      end += 1;}
       counter_holder_t *ch = count_malloc_assert(sizeof(counter_holder_t), "Error allocating memory for counter holder."); //create a counter holder
       counters_t *copy = copy_func(and_seq); //copy the current and sequence into the copy 
       ch->copy = copy; //insert this into the counter holder
-      counters_del(and_seq); //delete the previous and sequence
+      counters_del(and_seq); //free the and sequence
       intersect_related(start, end, words, ch, index, ch->copy); //intersect every word with the and sequence copy
       bag_insert(or_bag, copy); //once the and sequence has been processed, 
       free(ch); //free the counter holder
-      if (isOr(words[i])) {and_seq = counters_new();} //allocate for a new and sequence if this is not the end of the words
-      else { start = i + 1; //move the start tracker
+      if (isOr(words[i])) {
+        and_seq = counters_new(); //allocate for a new and sequence if this is not the end of the words
+        start = i + 1;
       }
     } else if (isAnd(words[i])){ //if the word is and, there isn't much to do
       i++; 
       end += 1;
       continue;
     } else {
-      counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); //otherwise, the counters for the word with the and sequence
+      counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); //otherwise, merge the counters for the word with the 
     }
     i++;
+    end += 1;
   }    
- 
+  
   counters_t *query_res = counters_new(); //allocate space for the final counter object created by this query
  
   counters_t *set;   
@@ -219,7 +240,6 @@ counters_t *create_and_seq(index_t *index, char **words){
     counters_merge(query_res, set); //merge them with the final result 
     counters_del(set); //free the individual and sequences
   }
-  
   bag_delete(or_bag, NULL); //delete the bag when it is empty
   return query_res; //return the final counters object
 }
