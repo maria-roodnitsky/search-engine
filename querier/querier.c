@@ -227,7 +227,7 @@ counters_t *create_and_seq(index_t *index, char **words){
       end += 1;
       continue;
     } else {
-      counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); //otherwise, merge the counters for the word with the 
+      counters_merge(and_seq, hashtable_find(index->wordHashtable, words[i])); //otherwise, merge the counters for the word with the  and sequence
     }
     i++;
     end += 1;

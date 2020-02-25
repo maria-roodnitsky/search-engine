@@ -8,7 +8,8 @@ The file 'notreadfile.txt' either does not exist or is not writable.
 TESTING queries in test_query.txt
 Query? Error: bad character '!' in query.
 Query? Error: bad character '*' in query.
-Query? Error: 'and' cannot be first word in a query.
+Query? Query? Error: 'and' cannot be first word in a query.
+Query? Query? Error: 'and' cannot be first word in a query.
 Query? Error: 'or' cannot be first word in a query.
 Query? Error: 'and' and 'and' cannot be adjacent in a query.
 Query? Error: 'or' and 'or' cannot be adjacent in a query.
@@ -24,25 +25,31 @@ score:  2 doc:  1 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/in
 Query? Query: computational biology 
 score:  1 doc:  9 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/C.html
 Query? Query: breadth first search 
-score:  2 doc:  3 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
-score:  1 doc:  8 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html
+score:  1 doc:  3 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
 Query? Query: depth and graph or huffman 
-score:  1 doc:  8 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html
+score:  1 doc:  6 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/H.html
 Query? Query: eniac or for 
-score:  1 doc:  4 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html
+score:  2 doc:  4 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html
+score:  1 doc:  9 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/C.html
+score:  1 doc:  8 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html
+score:  1 doc:  7 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/F.html
+score:  1 doc:  6 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/H.html
+score:  1 doc:  5 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html
+score:  1 doc:  3 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
+score:  1 doc:  2 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html
+score:  1 doc:  1 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
 Query? Query: fast page or playground 
 score:  1 doc:  1 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
-score:  1 doc:  7 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/F.html
 Query? Query: home or biology or transform and coding 
 score:  2 doc:  1 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
 score:  2 doc:  9 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/C.html
-score:  2 doc:  7 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/F.html
 score:  1 doc:  8 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html
-score:  1 doc:  6 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/H.html
 score:  1 doc:  5 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html
 score:  1 doc:  4 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/E.html
 score:  1 doc:  3 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/B.html
 score:  1 doc:  2 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html
+score:  1 doc:  6 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/H.html
+score:  1 doc:  7 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/F.html
 Query? Query: maria wrote a working querier 
 No results found
 Query? Query: home 
@@ -58,7 +65,7 @@ score:  1 doc:  2 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.
 Query? Query: algorithm 
 score:  1 doc:  2 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/A.html
 Query? Query: for or home or graph or tse 
-score:  3 doc:  1 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
+score:  4 doc:  1 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/index.html
 score:  3 doc:  5 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/G.html
 score:  2 doc:  9 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/C.html
 score:  2 doc:  8 url: http://old-www.cs.dartmouth.edu/~cs50/data/tse/letters/D.html
