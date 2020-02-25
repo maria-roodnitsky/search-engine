@@ -2,14 +2,14 @@
 
 # Testing script for querier
 # Author: Temi Prioleau
-# Added to by: Maria Roodnitsky for both the querier lab
+# Added to by: Maria Roodnitsky for the querier lab
 # Date: Feb 24, 2020
 #
 # usage: bash -v testing.sh
 # make test 
 
 # Define variables
-# test5 is a crawler produced directories, indexfile.txt is index produced
+# test5 is a crawler produced directories, 'indexfile.txt' is index produced
 
 crawlerDir=test5
 indexFile=indexfile.txt
@@ -40,7 +40,7 @@ rm notreadfile.txt
 ######################################
 ### These tests should pass ####
 
-echo TESTING queries in 'indexfile.txt'
+echo TESTING queries in 'test_query.txt'
 ./querier $crawlerDir $indexFile < test_query.txt
 
 echo

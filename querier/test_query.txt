@@ -1,5 +1,8 @@
 bad input! line :)
        the    only   bad   input here is the asterisk *
+       
+and
+or       
 and bad word order
 or bad word order
 intersecting and and word order
@@ -11,7 +14,7 @@ trailing and
 trailing or
 this or tse or dartmouth
 computational biology
-breadth first search
+brEaDth fIRst search
 depth and graph or huffman
 eniac or for
 fast page or playground
@@ -19,3 +22,4 @@ home or biology or transform and coding
 maria wrote a working querier
 home
 algorithm
+for or home or graph or tse 
